@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #141e30, #243b55);
+            color: white;
+            margin: 0;
+        }
+
+        .container {
+            width: 85%;
+            margin: 30px auto;
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        input, button {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button {
+            background: #00c6ff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0072ff;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background: rgba(255,255,255,0.1);
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    
+    <button onclick="logout()">Logout</button>
+
+    <input id="name" placeholder="Name">
+    <input id="email" placeholder="Email">
+    <input id="phone" placeholder="Phone">
+    <input id="department" placeholder="Department">
+    <input id="year" placeholder="Year">
+
+    <button onclick="addStudent()">Add Student</button>
+
+    <h2>Search Student</h2>
+    <input id="searchDept" placeholder="Department">
+    <button onclick="searchStudents()">Search</button>
+
+    <h2>All Students</h2>
+    <button onclick="getStudents()">Display All</button>
+
+    <ul id="list"></ul>
+
+</div>
+
+<script>
+
+const token = localStorage.getItem("token");
+
+function getHeaders() {
+return {
+"Content-Type": "application/json",
+"Authorization": "Bearer " + token
+};
+}
+
+// ADD
+function addStudent() {
+
+fetch("/students", {
+    method: "POST",
+    headers: getHeaders(),
+    body: JSON.stringify({
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        department: document.getElementById("department").value,
+        studentyear: document.getElementById("year").value
+    })
+})
+.then(res => res.json())
+.then(data => {
+    alert("Student added!");
+    getStudents();
+});
+}
+
+// GET ALL
+function getStudents() {
+fetch("/students", {
+headers: getHeaders()
+})
+.then(res => res.json())
+.then(showList);
+}
+
+// SEARCH
+function searchStudents() {
+const department = document.getElementById("searchDept").value;
+
+
+fetch("/students/search", {
+    method: "POST",
+    headers: getHeaders(),
+    body: JSON.stringify({ department }) 
+})
+.then(res => res.json())
+.then(showList);
+
+}
+
+// DELETE
+function deleteStudent(id) {
+fetch(`/students/${id}`, {
+method: "DELETE",
+headers: getHeaders()
+})
+.then(() => getStudents());
+}
+
+// SHOW LIST
+function showList(data) {
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    if (!Array.isArray(data)) {
+        console.error("Backend error:", data);
+        alert("Something went wrong!");
+        return;
+    }
+
+    data.forEach(s => {
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+            <b>${s.id}</b> - ${s.name} (${s.department})
+            <button onclick="deleteStudent(${s.id})">Delete</button>
+            <button onclick="editStudent(${s.id}, '${s.name}', '${s.department}')">Edit</button>
+        `;
+
+        list.appendChild(li);
+    });
+}
+
+
+// EDIT
+function editStudent(id, name, department) {
+    const newName = prompt("Enter new name", name);
+    const newDept = prompt("Enter new department", department);
+
+    fetch(`/students/${id}`, {
+        method: "PUT",
+        headers: getHeaders(),
+        body: JSON.stringify({
+            name: newName,
+            department: newDept
+        })
+    })
+    .then(() => getStudents());
+}
+
+function logout() {
+localStorage.removeItem("token");
+window.location.href = "login.html";
+}
+
+
+</script>
+
+</body>
+</html>
