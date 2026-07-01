@@ -23,7 +23,13 @@ public class FilterConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**", "/h2-console/**").permitAll()
+                .requestMatchers(
+                    "/auth/**",
+                    "/login.html",
+                    "/index.html",
+                    "/",
+                    "/h2-console/**"
+                 ).permitAll()
                 .anyRequest().authenticated()
             )
             .headers(headers -> headers.frameOptions(frame -> frame.disable()))
