@@ -88,7 +88,7 @@ return {
 // ADD
 function addStudent() {
 
-fetch("/students", {
+fetch("https://studentmanagementsystem-4c6f.onrender.com/students", {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify({
@@ -108,7 +108,7 @@ fetch("/students", {
 
 // GET ALL
 function getStudents() {
-fetch("/students", {
+fetch("https://studentmanagementsystem-4c6f.onrender.com/students", {
 headers: getHeaders()
 })
 .then(res => res.json())
@@ -120,7 +120,7 @@ function searchStudents() {
 const department = document.getElementById("searchDept").value;
 
 
-fetch("/students/search", {
+fetch("https://studentmanagementsystem-4c6f.onrender.com/students/search", {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify({ department }) 
@@ -132,7 +132,7 @@ fetch("/students/search", {
 
 // DELETE
 function deleteStudent(id) {
-fetch(`/students/${id}`, {
+fetch(`https://studentmanagementsystem-4c6f.onrender.com/students/${id}`, {
 method: "DELETE",
 headers: getHeaders()
 })
@@ -169,7 +169,7 @@ function editStudent(id, name, department) {
     const newName = prompt("Enter new name", name);
     const newDept = prompt("Enter new department", department);
 
-    fetch(`/students/${id}`, {
+    fetch(`https://studentmanagementsystem-4c6f.onrender.com0/students/${id}`, {
         method: "PUT",
         headers: getHeaders(),
         body: JSON.stringify({
